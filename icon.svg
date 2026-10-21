@@ -1,0 +1,42 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256" role="img" aria-label="DSH启动器">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#334155"/>
+      <stop offset="0.55" stop-color="#1e293b"/>
+      <stop offset="1" stop-color="#0f172a"/>
+    </linearGradient>
+    <linearGradient id="pad" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#f8fafc"/>
+      <stop offset="1" stop-color="#cbd5e1"/>
+    </linearGradient>
+    <linearGradient id="play" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#22d3ee"/>
+      <stop offset="1" stop-color="#6366f1"/>
+    </linearGradient>
+    <radialGradient id="glow" cx="0.5" cy="0.35" r="0.75">
+      <stop offset="0" stop-color="#38bdf8" stop-opacity="0.35"/>
+      <stop offset="1" stop-color="#38bdf8" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#bg)"/>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="url(#glow)"/>
+  <rect x="8" y="8" width="240" height="240" rx="56" fill="none" stroke="#ffffff" stroke-opacity="0.10" stroke-width="2"/>
+
+  <!-- 手柄机身 -->
+  <path d="M74 84h108c26 0 44 22 48 50 4 30-10 54-30 54-16 0-24-12-34-24H96c-10 12-18 24-34 24-20 0-34-24-30-54 4-28 22-50 42-50z"
+        fill="url(#pad)" stroke="#0f172a" stroke-opacity="0.35" stroke-width="3"/>
+
+  <!-- 左侧方向键 -->
+  <rect x="58" y="116" width="44" height="16" rx="5" fill="#334155"/>
+  <rect x="72" y="102" width="16" height="44" rx="5" fill="#334155"/>
+
+  <!-- 中间播放键 -->
+  <path d="M116 104l38 24-38 24z" fill="url(#play)" stroke="#0b1220" stroke-opacity="0.25" stroke-width="2" stroke-linejoin="round"/>
+
+  <!-- 右侧按钮 -->
+  <circle cx="196" cy="110" r="9" fill="#22d3ee"/>
+  <circle cx="214" cy="128" r="9" fill="#a78bfa"/>
+  <circle cx="196" cy="146" r="9" fill="#f472b6"/>
+  <circle cx="178" cy="128" r="9" fill="#fbbf24"/>
+</svg>

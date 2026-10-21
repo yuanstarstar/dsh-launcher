@@ -1,0 +1,14 @@
+# DSH启动器 bundle 插入声明
+#
+# 在 DSH 里插入「DSH启动器」Host 插件（对话工具 + 面板 API）。
+# 安装：plugin_manager action=install_bundle target=<本目录绝对路径>
+#
+# 注意：本文件刻意不写死 dataRoot / 绝对路径，方便把插件目录整体拷到其它机器直接安装。
+# 数据根默认：<用户主目录>/.dsh-launcher/data（Windows 为 C:\Users\<用户名>\.dsh-launcher\data）；
+# 如需自定义，在 DSH 的插件配置里设置 dataRoot（或覆盖本行 config.dataRoot）。
+- insert:
+    - id: dsh-launcher
+      name: '@local/dsh-launcher'
+      config:
+        downloadConcurrency: 16
+        retries: 3

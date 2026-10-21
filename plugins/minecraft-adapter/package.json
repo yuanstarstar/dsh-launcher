@@ -1,0 +1,32 @@
+{
+  "name": "@local/dsh-mc-adapter",
+  "version": "3.0.0",
+  "private": true,
+  "type": "module",
+  "description": "DSH启动器 的可选 Minecraft 适配器包：单独安装后启动器里才会出现 Minecraft（版本安装、加载器、Modrinth 模组、Java 运行时与启动参数）。核心包保持纯净通用。",
+  "keywords": ["dsh", "dsh-plugin", "launcher", "game", "minecraft", "adapter", "fabric", "forge", "neoforge", "quilt"],
+  "license": "MIT",
+  "exports": {
+    ".": "./index.js",
+    "./package.json": "./package.json",
+    "./icon": "./icon.svg"
+  },
+  "files": [
+    "index.js",
+    "lib/",
+    "cordis.patch.yml",
+    "README.md",
+    "icon.svg",
+    "scripts/adapter-test.mjs"
+  ],
+  "icon": "./icon.svg",
+  "scripts": {
+    "test": "node scripts/adapter-test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "manifestVersion": 1
+  }
+}

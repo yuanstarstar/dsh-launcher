@@ -1,0 +1,66 @@
+{
+  "name": "@local/dsh-launcher",
+  "version": "3.1.0",
+  "private": true,
+  "type": "module",
+  "description": "DSH启动器：通用游戏下载与启动框架。核心不含任何具体游戏，游戏通过 GitHub Release / URL 清单 / 手动导入 / 外部适配器添加，可在 DSH 对话或面板里安装并启动。",
+  "keywords": ["dsh", "dsh-plugin", "launcher", "game", "download", "framework"],
+  "license": "MIT",
+  "author": "<你的名字或 GitHub 用户名>",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/OWNER/dsh-launcher.git"
+  },
+  "homepage": "https://github.com/OWNER/dsh-launcher",
+  "bugs": {
+    "url": "https://github.com/OWNER/dsh-launcher/issues"
+  },
+  "engines": {
+    "node": ">=20"
+  },
+  "exports": {
+    ".": "./index.js",
+    "./client": "./client.js",
+    "./package.json": "./package.json",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./lib/core/registry.js": "./lib/core/registry.js",
+    "./lib/core/engine.js": "./lib/core/engine.js",
+    "./lib/core/paths.js": "./lib/core/paths.js",
+    "./lib/core/*": "./lib/core/*"
+  },
+  "files": [
+    "index.js",
+    "client.js",
+    "lib/",
+    "cordis.patch.yml",
+    "locale/*.json",
+    "icon.svg",
+    "README.md",
+    "docs/USAGE.md",
+    "docs/INSTALL.md",
+    "docs/GAME-ADAPTER.md",
+    "docs/PROVIDERS.md",
+    "docs/ARCHITECTURE-v3.md"
+  ],
+  "icon": "./icon.svg",
+  "scripts": {
+    "test": "node scripts/registry-test.mjs && node scripts/bridge-test.mjs && node scripts/portability-test.mjs && node scripts/brand-check.mjs && node scripts/inject-test.mjs && node scripts/http-test.mjs",
+    "build:dist": "node scripts/build-dist.mjs",
+    "portability": "node scripts/portability-test.mjs"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "platform": "web",
+      "immediately": true,
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-slots"
+      ]
+    },
+    "manifestVersion": 1
+  }
+}
