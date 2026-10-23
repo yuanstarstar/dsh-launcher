@@ -1145,7 +1145,8 @@ async function main() {
 		return total;
 	}
 
-	async function scenario(label, client, feeds, expect) {
+	async function scenario(label, client, feeds, expect, options) {
+		const opts = options || {};
 		const mounted = await mountEntry(client, feeds);
 		eq(mounted.remaining, 0, label + "：状态喂值未消费完（剩余 " + mounted.remaining + "）");
 		const text = textOf(mounted.tree);
@@ -1157,7 +1158,7 @@ async function main() {
 		excludes(text, "[object Object]", label + "：出现 [object Object]");
 		excludes(text, "undefined", label + "：出现 undefined");
 		excludes(text, "NaN", label + "：出现 NaN");
-		assertNoBanned(text, label);
+		if (!opts.allowBanned) assertNoBanned(text, label);
 		(expect || []).forEach((needle) => includes(text, needle, label + "：缺少文案 " + needle));
 		return { text: text, tree: mounted.tree };
 	}
@@ -1234,7 +1235,37 @@ async function main() {
 
 	await scenario("状态同步失败", loadClient({}), [true, SNAPSHOT, "网络断开", "games", [], "", ""], ["状态同步失败", "网络断开"]);
 
-	await scenario("品牌词净化（游戏详情）", loadClient({ stateData: BRAND_SNAPSHOT, detailData: { instance: { id: "brand-inst", name: BRAND_CAP + " 实例", content: [] }, game: "brand-game" } }), fullDetailFeeds(BRAND_SNAPSHOT, "brand-game"), ["生存"]);
+	await scenario(
+		"外部游戏名原样显示（客户端不做运行时替换）",
+		loadClient({ stateData: BRAND_SNAPSHOT, detailData: { instance: { id: "brand-inst", name: BRAND_CAP + " 实例", content: [] }, game: "brand-game" } }),
+		fullDetailFeeds(BRAND_SNAPSHOT, "brand-game"),
+		[BRAND_CAP + " 实例"],
+		{ allowBanned: true }
+	);
+
+	await scenario(
+		"推荐目录外部名称原样显示",
+		loadClient({
+			catalogData: {
+				entries: [
+					{
+						id: "sub-brand",
+						label: BRAND_CAP + " 附属启动器",
+						repo: "owner/" + BRAND_A + "-launcher",
+						description: "外部条目",
+						version: "1.0.0",
+						installed: false,
+						updateAvailable: false,
+					},
+				],
+				source: "remote",
+				fetchedAt: "2026-10-22T00:00:00.000Z",
+			},
+		}),
+		entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()),
+		[BRAND_CAP + " 附属启动器"],
+		{ allowBanned: true }
+	);
 
 	await scenario("异常数据（游戏列表）", loadClient({ stateData: HOSTILE_SNAPSHOT }), [true, HOSTILE_SNAPSHOT, "", "games", [], "", ""], []);
 

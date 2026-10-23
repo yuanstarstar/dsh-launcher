@@ -601,21 +601,13 @@ window.__ModuleLoader__.load({
 			return fallback === undefined ? "" : fallback;
 		}
 
-		const BRAND_RULES = [
-			[new RegExp(String.fromCharCode(25105, 30340, 19990, 30028), "g"), "游戏"],
-			[new RegExp(String.fromCharCode(109, 105, 110, 101, 99, 114, 97, 102, 116), "gi"), "游戏"],
-			[new RegExp(String.fromCharCode(109, 111, 106, 97, 110, 103), "gi"), "官方"],
-			[new RegExp(String.fromCharCode(109, 99) + "Version", "gi"), "游戏版本号"],
-			[new RegExp("\\b" + String.fromCharCode(109, 99) + "\\b", "gi"), "游戏"],
-		];
-
+		// 外部数据（游戏名、附属启动器名、仓库名、日志、错误、适配器文案）统一原样显示，
+		// 不在客户端做运行时替换。品牌纯净由本包自己的 locale 与内置文案保证
+		// （static check 见 scripts/brand-check.mjs）；把第三方游戏名这类正常名称替换成
+		// “游戏”只会让用户困惑，且会篡改外部内容。
 		function brandSafe(text) {
 			if (text === undefined || text === null) return "";
-			let out = String(text);
-			for (let index = 0; index < BRAND_RULES.length; index += 1) {
-				out = out.replace(BRAND_RULES[index][0], BRAND_RULES[index][1]);
-			}
-			return out;
+			return String(text);
 		}
 
 		function fmtBytes(bytes) {
