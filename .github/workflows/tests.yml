@@ -1,0 +1,38 @@
+name: tests
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  static-tests:
+    name: 静态与仿真测试
+    runs-on: windows-latest
+    timeout-minutes: 15
+    steps:
+      - name: 检出代码
+        uses: actions/checkout@v4
+
+      - name: 安装 Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: 注册表 / 附属启动器 / 桥接 / 可移植性 / 品牌
+        run: |
+          node scripts/registry-test.mjs
+          node scripts/sublauncher-test.mjs
+          node scripts/bridge-test.mjs
+          node scripts/portability-test.mjs
+          node scripts/brand-check.mjs
+
+      - name: 注入 / HTTP / 面板仿真
+        run: |
+          node scripts/inject-test.mjs
+          node scripts/http-test.mjs
+          node scripts/check-client.mjs
+
+      - name: 分发包可构建
+        run: node scripts/build-dist.mjs

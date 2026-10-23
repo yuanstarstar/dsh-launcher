@@ -5,7 +5,7 @@ DSH启动器核心不包含任何具体游戏。要让一个游戏出现在启�
 1. 写成独立插件包（推荐）：安装后在 `apply()` 里注册；
 2. 以 `.mjs` 文件放进 `<dataRoot>/adapters/`，DSH启动器启动时自动加载。
 
-内置提供者（GitHub Release / URL 清单 / 手动导入）本质上就是预置的通用适配器；仓库 `plugins/` 目录下还有一份完整示例适配器包，可作为参考实现。
+内置提供者（GitHub Release / URL 清单 / 手动导入）本质上就是预置的通用适配器。完整示例可参考任意已发布的「附属启动器」项目——它把适配器打成 zip 分发（打包格式见 [SUB-LAUNCHER.md](SUB-LAUNCHER.md)）。
 
 ---
 
@@ -34,7 +34,7 @@ export const name = '@local/my-game-adapter'
 import { registerGame } from '@local/dsh-launcher/lib/core/registry.js'
 ```
 
-外部适配器包还需要一个 bundle patch，让 DSH 加载它的 Host 入口；参考仓库 `plugins/` 下示例适配器包的结构。
+外部适配器以 DSH 插件包形式安装时，还需要一个 bundle patch 让 DSH 加载它的 Host 入口（参考下面的文件桥接方式）。**v4 起更推荐把适配器打成「附属启动器」zip，由本体下载安装**——不需要正式安装 DSH 插件，也不需要重启，格式见 [SUB-LAUNCHER.md](SUB-LAUNCHER.md)。
 
 ## 2. 适配器对象
 

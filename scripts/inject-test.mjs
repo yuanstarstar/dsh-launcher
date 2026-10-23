@@ -145,10 +145,10 @@ check('零注册失败警告', () => {
   if (bad.length) throw new Error('出现失败日志：' + bad.join(' | '))
 })
 
-check('25 个 launcher_* 工具已注册', () => {
+check('30 个 launcher_* 工具已注册', () => {
   const names = [...state.tools.keys()]
   const launcherTools = names.filter((name) => name.startsWith('launcher_'))
-  if (launcherTools.length !== 25) throw new Error('数量 ' + launcherTools.length + '：' + launcherTools.join(','))
+  if (launcherTools.length !== 30) throw new Error('数量 ' + launcherTools.length + '：' + launcherTools.join(','))
   if (!names.every((name) => name.startsWith('launcher_'))) throw new Error('存在非 launcher_ 前缀工具')
 })
 

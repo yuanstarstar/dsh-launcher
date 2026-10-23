@@ -525,6 +525,41 @@ const HITS_FIXTURE = [
 	{ projectId: "project-2", title: "示例内容 B", description: "示例描述 B", downloads: 4 },
 ];
 
+const SUB_LAUNCHERS_FIXTURE = [
+	{
+		id: "sub-example",
+		label: "示例附属启动器",
+		version: "1.0.0",
+		source: "repo",
+		repo: "owner/name",
+		updateAvailable: true,
+		installedAt: "2026-10-20T00:00:00.000Z",
+		updatedAt: "2026-10-20T00:00:00.000Z",
+		games: ["example"],
+	},
+];
+
+const CATALOG_FIXTURE = [
+	{
+		id: "sub-example",
+		label: "示例附属启动器",
+		repo: "owner/name",
+		description: "示例推荐条目",
+		version: "1.1.0",
+		installed: true,
+		updateAvailable: true,
+	},
+	{
+		id: "sub-catalog",
+		label: "推荐附属启动器",
+		url: "https://example.com/sub.zip",
+		description: "推荐条目描述",
+		version: "2.0.0",
+		installed: false,
+		updateAvailable: false,
+	},
+];
+
 const HOSTILE_SNAPSHOT = {
 	config: { dataRoot: { bad: true }, downloadConcurrency: { bad: 1 }, retries: { bad: 1 } },
 	games: [
@@ -649,6 +684,14 @@ function loadClient(options) {
 	const stateData = config.stateData || SNAPSHOT;
 	const fallbackPayload = (path, method) => {
 		if (path === "/state") return stateData;
+		if (path === "/catalog" || path.indexOf("/catalog?") === 0) {
+			return config.catalogData || { entries: CATALOG_FIXTURE, source: "builtin", fetchedAt: "2026-10-22T00:00:00.000Z" };
+		}
+		if (path === "/sublaunchers" || path.indexOf("/sublaunchers?") === 0) return { launchers: config.launchersData || SUB_LAUNCHERS_FIXTURE };
+		if (path === "/sublaunchers/install" && method === "POST") return { jobId: "job-sub" };
+		if (/^\/sublaunchers\/[^/]+\/check$/.test(path) && method === "POST") return { id: "sub-example", installedVersion: "1.0.0", latestVersion: "1.1.0", updateAvailable: true };
+		if (/^\/sublaunchers\/[^/]+\/update$/.test(path) && method === "POST") return { jobId: "job-up" };
+		if (path.indexOf("/sublaunchers/") === 0 && method === "DELETE") return { removed: true };
 		if (path.indexOf("/versions?") === 0) return config.versionsData || VERSIONS_FIXTURE;
 		if (path.indexOf("/jobs/") === 0) return { job: config.jobData || JOB_FIXTURE };
 		if (/^\/instances\/[^/?#]+$/.test(path) && method === "GET") return config.detailData || DETAIL_FIXTURE;
@@ -805,6 +848,13 @@ function settingsFeeds() {
 	return [{}, false];
 }
 
+function subLauncherFeeds() {
+	// SubLaunchersTab：launchers, loading, loadError, sourceType, repo, url, file,
+	// assetPattern, advancedOpen, installing, installJobId, checkBusy, updateBusy,
+	// deleteTarget, deleteBusy, updateJobId, catalog, catalogLoading, catalogError, catalogBusy
+	return [SUB_LAUNCHERS_FIXTURE, false, "", "github", "owner/name", "", "", "", false, false, "", {}, {}, "", false, "", CATALOG_FIXTURE, false, "", {}];
+}
+
 function fullDetailFeeds(snapshot, gameId) {
 	return entryFeeds(snapshot, "games", gameId || "example").concat(gameDetailFeeds()).concat(instanceListFeeds()).concat(gameContentFeeds());
 }
@@ -951,6 +1001,7 @@ async function main() {
 			'"/cancel"',
 			'"/config"',
 			'"/content/"',
+			'"/catalog"',
 			'"PATCH"',
 		];
 		literals.forEach((literal) => includes(base.source, literal, "缺少接口字面量"));
@@ -966,21 +1017,27 @@ async function main() {
 	});
 
 	// ---------------- 2. 词典与 locale JSON ----------------
-	await check("词典标题 / 入口 / 三个 tab 文案", async () => {
+	await check("词典标题 / 入口 / 四个 tab 文案", async () => {
 		eq(zh.title, "DSH启动器", "中文标题不符");
 		eq(en.title, "DSH Launcher", "英文标题不符");
 		eq(zh["entry.label"], "启动游戏", "中文入口文案不符");
 		eq(en["entry.label"], "Launch", "英文入口文案不符");
 		eq(zh["tab.games"], "游戏", "游戏 tab 文案不符");
+		eq(zh["tab.sublaunchers"], "附属启动器", "附属启动器 tab 文案不符");
+		eq(en["tab.sublaunchers"], "Sub-launchers", "附属启动器英文 tab 文案不符");
 		eq(zh["tab.addGame"], "添加游戏", "添加游戏 tab 文案不符");
 		eq(zh["tab.settings"], "设置", "设置 tab 文案不符");
 	});
 
-	await check("词典只保留游戏 / 添加游戏 / 设置三个 tab", async () => {
+	await check("词典只保留游戏 / 附属启动器 / 添加游戏 / 设置四个 tab", async () => {
 		const keys = Object.keys(zh);
 		assert(keys.indexOf("tab.create") < 0, "不应再存在 tab.create");
 		assert(keys.indexOf("tab.content") < 0, "不应再存在 tab.content");
-		eq(keys.filter((key) => key.indexOf("tab.") === 0).sort(), ["tab.addGame", "tab.games", "tab.settings"], "tab 键集合不符");
+		eq(
+			keys.filter((key) => key.indexOf("tab.") === 0).sort(),
+			["tab.addGame", "tab.games", "tab.settings", "tab.sublaunchers"],
+			"tab 键集合不符"
+		);
 	});
 
 	await check("词典关键键族齐全（中英均非空）", async () => {
@@ -1027,6 +1084,16 @@ async function main() {
 			"addGame.providerGithub",
 			"addGame.providerUrl",
 			"addGame.providerManual",
+			"tab.sublaunchers",
+			"sublauncher.title",
+			"sublauncher.installTitle",
+			"sublauncher.install",
+			"sublauncher.installed",
+			"sublauncher.check",
+			"sublauncher.update",
+			"sublauncher.delete",
+			"sublauncher.needSource",
+			"sublauncher.deleteConfirm",
 			"addGame.repo",
 			"addGame.test",
 			"addGame.save",
@@ -1130,7 +1197,40 @@ async function main() {
 
 	await scenario("设置", loadClient({}), entryFeeds(SNAPSHOT, "settings").concat(settingsFeeds()), ["数据目录", "C:/DSH/data", "下载并发", "重试次数", "统计", "保存设置"]);
 
-	await scenario("英文界面", loadClient({ language: "en-US" }), entryFeeds(SNAPSHOT), ["DSH Launcher", "Launch", "Games", "Add game", "Settings"]);
+	await scenario("附属启动器", loadClient({}), entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()), [
+		"附属启动器",
+		"独立项目",
+		"安装附属启动器",
+		"推荐目录",
+		"刷新推荐",
+		"示例推荐条目",
+		"推荐附属启动器",
+		"可更新",
+		"已安装",
+		"已安装的附属启动器",
+		"示例附属启动器",
+		"版本 1.0.0",
+		"有更新可用",
+		"检查更新",
+		"更新",
+		"删除",
+		"来源",
+		"提供游戏 1 个",
+	]);
+
+	await scenario("附属启动器推荐目录空态", loadClient({ catalogData: [] }), entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()), [
+		"推荐目录暂时没有可用的附属启动器",
+		"仍可手动填写仓库",
+	]);
+
+	await scenario(
+		"附属启动器推荐目录读取失败",
+		loadClient({ catalogData: { entries: [], source: "builtin", error: "目录服务不可用" } }),
+		entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()),
+		["读取推荐目录失败：目录服务不可用", "仍可手动填写仓库"]
+	);
+
+	await scenario("英文界面", loadClient({ language: "en-US" }), entryFeeds(SNAPSHOT), ["DSH Launcher", "Launch", "Games", "Sub-launchers", "Add game", "Settings"]);
 
 	await scenario("状态同步失败", loadClient({}), [true, SNAPSHOT, "网络断开", "games", [], "", ""], ["状态同步失败", "网络断开"]);
 
@@ -1148,8 +1248,8 @@ async function main() {
 	await scenario("异常数据（设置）", loadClient({ stateData: HOSTILE_SNAPSHOT }), [true, HOSTILE_SNAPSHOT, "", "settings", [], "", "", {}, false], []);
 
 	await check("渲染场景数量与规模达标", async () => {
-		assert(stats.count >= 11, "渲染场景数量不足：" + stats.count);
-		assert(stats.nodes >= 600, "渲染节点总数不足：" + stats.nodes);
+		assert(stats.count >= 14, "渲染场景数量不足：" + stats.count);
+		assert(stats.nodes >= 700, "渲染节点总数不足：" + stats.nodes);
 	});
 
 	// ---------------- 4. 游戏卡 / 详情 / 返回 / Esc ----------------
@@ -1196,12 +1296,16 @@ async function main() {
 		excludes(textOf(tree), "返回游戏列表", "返回后仍在详情");
 	});
 
-	await check("面板可在游戏 / 添加游戏 / 设置之间切换", async () => {
+	await check("面板可在游戏 / 附属启动器 / 添加游戏 / 设置之间切换", async () => {
 		const client = loadClient({});
 		const mounted = await mountEntry(client, entryFeeds(SNAPSHOT));
-		const settingsTab = findAll(mounted.tree, (node, own) => node.props.className === "dsl_tab" && own === "设置")[0];
+		const subTab = findAll(mounted.tree, (node, own) => node.props.className === "dsl_tab" && own === "附属启动器")[0];
+		assert(subTab, "找不到附属启动器 tab");
+		let tree = await clickNode(client, subTab);
+		includes(textOf(tree), "安装附属启动器", "切换到附属启动器 tab 失败");
+		const settingsTab = findAll(tree, (node, own) => node.props.className === "dsl_tab" && own === "设置")[0];
 		assert(settingsTab, "找不到设置 tab");
-		let tree = await clickNode(client, settingsTab);
+		tree = await clickNode(client, settingsTab);
 		includes(textOf(tree), "保存设置", "切换到设置 tab 失败");
 		const addTab = findAll(tree, (node, own) => node.props.className === "dsl_tab" && own === "添加游戏")[0];
 		assert(addTab, "找不到添加游戏 tab");
@@ -1295,6 +1399,60 @@ async function main() {
 		assert(patchCall, "没有发起 PATCH /config");
 		includes(patchCall.url, "/config", "PATCH 地址不符");
 		eq(patchCall.body, { downloadConcurrency: 16, retries: 3 }, "PATCH body 不符");
+	});
+
+	// ---------------- 10. 附属启动器安装 / 检查更新 / 更新 / 删除 ----------------
+	await check("附属启动器安装、检查更新、更新与删除", async () => {
+		const client = loadClient({});
+		const mounted = await mountEntry(client, entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()));
+		eq(mounted.remaining, 0, "附属启动器表单 state 未消费完");
+		let text = textOf(mounted.tree);
+		includes(text, "安装附属启动器", "缺少安装表单");
+		includes(text, "示例附属启动器", "缺少已安装列表");
+		includes(text, "有更新可用", "缺少更新徽标");
+		await clickText(client, "安装");
+		const installCall = client.fetchCalls.filter((call) => call.method === "POST" && call.url.indexOf("/sublaunchers/install") >= 0).pop();
+		assert(installCall, "没有发起 POST /sublaunchers/install");
+		eq(installCall.body.repo, "owner/name", "安装 body.repo 不符");
+		await clickText(client, "检查更新");
+		assert(
+			client.fetchCalls.some((call) => call.method === "POST" && call.url.indexOf("/sublaunchers/sub-example/check") >= 0),
+			"没有发起检查更新请求"
+		);
+		await clickText(client, "更新");
+		assert(
+			client.fetchCalls.some((call) => call.method === "POST" && call.url.indexOf("/sublaunchers/sub-example/update") >= 0),
+			"没有发起更新请求"
+		);
+		assert(client.fetchCalls.some((call) => call.url.indexOf("/jobs/job-up") >= 0), "更新后没有轮询任务详情");
+		await clickText(client, "删除");
+		text = textOf(client.runtime.tree());
+		includes(text, "确认删除附属启动器", "删除没有二次确认");
+		await clickText(client, "确认");
+		const deleteCall = client.fetchCalls.filter((call) => call.method === "DELETE" && call.url.indexOf("/sublaunchers/") >= 0).pop();
+		assert(deleteCall, "没有发起 DELETE /sublaunchers/:id");
+		includes(deleteCall.url, "/sublaunchers/sub-example", "删除地址不符");
+	});
+
+	// ---------------- 11. 推荐目录（catalog） ----------------
+	await check("推荐目录渲染、刷新与一键安装", async () => {
+		const client = loadClient({});
+		const mounted = await mountEntry(client, entryFeeds(SNAPSHOT, "sublaunchers").concat(subLauncherFeeds()));
+		eq(mounted.remaining, 0, "推荐目录 state 未消费完");
+		const text = textOf(mounted.tree);
+		includes(text, "推荐目录", "缺少推荐目录区域");
+		includes(text, "刷新推荐", "缺少刷新按钮");
+		includes(text, "示例推荐条目", "缺少推荐条目描述");
+		includes(text, "推荐附属启动器", "缺少未安装推荐条目");
+		includes(text, "可更新", "缺少可更新徽标");
+		const installButtons = findAll(mounted.tree, (node, own) => node.props && typeof node.props.onClick === "function" && own === "安装");
+		assert(installButtons.length >= 2, "推荐目录缺少安装按钮（找到 " + installButtons.length + " 个）");
+		await clickNode(client, installButtons[installButtons.length - 1]);
+		const installCall = client.fetchCalls.filter((call) => call.method === "POST" && call.url.indexOf("/sublaunchers/install") >= 0).pop();
+		assert(installCall, "推荐目录安装没有发起 POST /sublaunchers/install");
+		eq(installCall.body, { url: "https://example.com/sub.zip" }, "推荐目录安装 body 不符");
+		await clickText(client, "刷新推荐");
+		assert(client.fetchCalls.some((call) => call.url.indexOf("/catalog?refresh=1") >= 0), "刷新推荐没有携带 refresh=1");
 	});
 
 	// ---------------- 汇总 ----------------

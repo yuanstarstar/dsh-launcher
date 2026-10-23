@@ -6,10 +6,10 @@
  *
  * 扫描范围：
  *   1) 用户可见文件：index.js、client.js、locale/*.json、package.json、README.md、
- *      docs/USAGE.md、docs/GAME-ADAPTER.md、icon.svg、cordis.patch.yml
+ *      docs/USAGE.md、docs/INSTALL.md、docs/GAME-ADAPTER.md、docs/SUB-LAUNCHER.md、icon.svg、cordis.patch.yml
  *   2) 核心实现：lib/core 目录下全部 js 文件（核心包必须完全通用）
- * 不扫描：docs/ARCHITECTURE-v3.md（内部开发规范）、scripts/（测试脚本可用具体 URL）、
- *        plugins/（外部示例适配器，允许出现具体游戏字样）。
+ * 不扫描：docs/ARCHITECTURE*.md（内部开发规范）、scripts/（测试脚本可用具体 URL）。
+ *       具体游戏的实现属于独立「附属启动器」项目，不在本仓库。
  */
 import fs from 'node:fs'
 import path from 'node:path'
@@ -48,6 +48,7 @@ const USER_FILES = [
   'docs/USAGE.md',
   'docs/INSTALL.md',
   'docs/GAME-ADAPTER.md',
+  'docs/SUB-LAUNCHER.md',
   'icon.svg',
   'cordis.patch.yml',
 ]
@@ -59,7 +60,8 @@ function checkFile(rel, content, { strict = true } = {}) {
   scanned += 1
   const lines = content.split(/\r?\n/)
   for (let i = 0; i < lines.length; i += 1) {
-    const line = lines[i]
+    // URL 与仓库标识属于技术引用（例如推荐目录地址里的仓库名），不算用户可见文案；扫描前剥离。
+    const line = lines[i].replace(/https?:\/\/\S+/gi, '').replace(/\b[a-z0-9_.-]+\/[a-z0-9_.-]*(?:minecraft|mojang|forge|fabric|quilt|neoforge|modrinth|curseforge|bmclapi|piston|optifine|adoptium)[a-z0-9_.-]*/gi, '')
     const lower = line.toLowerCase()
     for (const word of FORBIDDEN) {
       if (lower.includes(word)) failures.push(`${rel}:${i + 1} 含具体游戏/平台字样「${word}」：${line.trim().slice(0, 160)}`)

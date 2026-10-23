@@ -1,5 +1,8 @@
 /**
- * 构建分发包：打包「DSH启动器」核心包 + 可选适配器包，生成可直接拷到其它机器安装的目录与 zip。
+ * 构建分发包：打包「DSH启动器」（启动器本体，不含任何具体游戏），生成可直接拷到其它机器安装的目录与 zip。
+ *
+ * 具体游戏能力由「附属启动器」提供：在目标机器装好本体后，从 GitHub Release / zip URL / 本机文件
+ * 安装对应游戏的附属启动器即可（见 docs/SUB-LAUNCHER.md、docs/INSTALL.md）。
  *
  * 用法：
  *   node scripts/build-dist.mjs               # 输出到 <仓库>/dist/
@@ -9,7 +12,7 @@
  * 产物结构：
  *   dist/dsh-launcher-<version>/
  *     index.js client.js lib/ locale/ icon.svg package.json cordis.patch.yml
- *     README.md INSTALL.md docs/ plugins/<适配器>/
+ *     README.md INSTALL.md docs/
  *   dist/dsh-launcher-<version>.zip
  *
  * 分发内容不含 data/、test/、tmp/、node_modules/、dist/ 与本机缓存。
@@ -62,7 +65,7 @@ fs.mkdirSync(TARGET, { recursive: true })
 
 // 2) 核心包文件
 const ROOT_FILES = ['index.js', 'client.js', 'package.json', 'cordis.patch.yml', 'icon.svg', 'README.md', 'LICENSE']
-const ROOT_DIRS = ['lib', 'locale', 'docs', 'plugins']
+const ROOT_DIRS = ['lib', 'locale', 'docs']
 let copied = 0
 for (const file of ROOT_FILES) {
   if (copy(path.join(ROOT, file), path.join(TARGET, file))) copied += 1
@@ -95,6 +98,8 @@ const REQUIRED = [
   'lib/core/engine.js',
   'lib/core/registry.js',
   'lib/core/http.js',
+  'lib/core/sublaunchers.js',
+  'docs/SUB-LAUNCHER.md',
   'locale/zh.json',
   'locale/en.json',
 ]
@@ -113,8 +118,8 @@ function walk(dir, rel = '') {
 }
 
 const files = walk(TARGET)
-const forbidden = files.filter((rel) => /(^|\/)(data|test|tmp|node_modules|dist)(\/|$)/.test(rel))
-if (forbidden.length) fail(`分发包含不应分发的内容：${forbidden.slice(0, 10).join(', ')}`)
+const forbiddenInZip = files.filter((rel) => /(^|\/)(data|test|tmp|node_modules|dist|plugins)(\/|$)/.test(rel))
+if (forbiddenInZip.length) fail(`分发包含不应分发的内容：${forbiddenInZip.slice(0, 10).join(', ')}`)
 
 // 5) 压缩（PowerShell Compress-Archive；失败不算致命，目录本身已可用）
 let zipPath = null
@@ -130,7 +135,7 @@ if (MAKE_ZIP) {
     )
     zipBytes = fs.statSync(zipPath).size
     const entries = await listZipEntries(zipPath)
-    const bad = entries.filter((entry) => /(^|\/)(data|test|tmp|node_modules|dist)(\/|$)/.test(entry.name))
+    const bad = entries.filter((entry) => /(^|\/)(data|test|tmp|node_modules|dist|plugins)(\/|$)/.test(entry.name))
     if (bad.length) fail(`zip 含不应分发的内容：${bad.slice(0, 10).map((e) => e.name).join(', ')}`)
     const has = (name) => entries.some((entry) => entry.name === name)
     for (const rel of ['index.js', 'client.js', 'cordis.patch.yml', 'lib/core/engine.js']) {
@@ -143,13 +148,9 @@ if (MAKE_ZIP) {
   }
 }
 
-const adapterRoot = path.join(TARGET, 'plugins')
-const adapters = fs.existsSync(adapterRoot) ? fs.readdirSync(adapterRoot).filter((name) => fs.existsSync(path.join(adapterRoot, name, 'package.json'))) : []
-
 console.log(`PASS build-dist：dsh-launcher ${VERSION}`)
 console.log(`  输出目录：${TARGET}`)
-console.log(`  文件数：${files.length}（核心 ${copied} 项 + 可选适配器 ${adapters.length} 个）`)
-if (adapters.length) console.log(`  可选适配器：${adapters.join(', ')}`)
+console.log(`  文件数：${files.length}`)
 if (zipPath) console.log(`  zip：${zipPath}（${(zipBytes / 1024 / 1024).toFixed(2)} MB）`)
 else if (MAKE_ZIP) console.log('  zip：未生成（见上方警告）')
-console.log('  目标机器安装见 INSTALL.md：安装核心包 → 重启 DSH → 可选安装适配器（无需重启）。')
+console.log('  目标机器安装见 INSTALL.md：安装本体包 → 重启 DSH → 在「附属启动器」页安装所需附属启动器（无需重启）。')

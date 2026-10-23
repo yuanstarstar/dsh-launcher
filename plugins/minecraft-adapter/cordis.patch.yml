@@ -1,9 +1,0 @@
-# DSH启动器 可选 Minecraft 适配器包 bundle 插入声明
-#
-# 本包依赖「DSH启动器」核心包（@local/dsh-launcher）已安装并激活，
-# 通过 globalThis.__dshLauncherRegistry / core/registry.js 注册 Minecraft 游戏适配器。
-# 安装：plugin_manager action=install_bundle target=<本目录绝对路径>
-- insert:
-    - id: dsh-mc-adapter
-      name: '@local/dsh-mc-adapter'
-      config: {}

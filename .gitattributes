@@ -1,0 +1,12 @@
+# 统一换行符：文本文件在仓库里用 LF，检出时按平台自动转换
+* text=auto eol=lf
+
+# 明确为二进制，避免 Git 尝试转换
+*.png binary
+*.jpg binary
+*.jpeg binary
+*.webp binary
+*.gif binary
+*.ico binary
+*.zip binary
+*.jar binary

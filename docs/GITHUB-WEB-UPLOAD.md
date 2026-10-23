@@ -3,6 +3,8 @@
 > 适用：只想用浏览器把本项目传到 GitHub，不想安装 Git、也不想敲命令。
 > 缺点先说清：网页上传**没有提交历史管理**，以后每次改文件都是网页上直接提交；批量更新不如 Git 方便，但传第一版、发 Release 完全够用。
 > 如果以后想学命令行/PR 流程，看 [GITHUB-UPLOAD.md](GITHUB-UPLOAD.md)。
+>
+> **本项目由两个仓库组成**：本体（本教程主线，第 0～9 节）与「我的世界启动器」附属启动器（第 10 节）。
 
 ---
 
@@ -14,7 +16,7 @@
 C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-repo\
 ```
 
-里面共 **58 个文件**（含 `.gitignore`、`.gitattributes`、`.github/workflows/tests.yml`、LICENSE、文档、源码），没有 `data/`、`dist/`、`test/tmp/`。**直接上传这个文件夹里的内容**，不要上传它本身（否则会多出一层目录）。
+里面共 **45 个文件**（含 `.gitignore`、`.gitattributes`、`.github/workflows/tests.yml`、LICENSE、文档、源码），没有 `data/`、`dist/`、`test/tmp/`、`plugins/`。**直接上传这个文件夹里的内容**，不要上传它本身（否则会多出一层目录）。
 
 ---
 
@@ -38,12 +40,12 @@ C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-repo\
 
 1. 打开文件资源管理器，进入：
    `C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-repo\`
-2. 按 **Ctrl + A** 全选（58 个：文档、源码、`docs`、`lib`、`locale`、`plugins`、`scripts`、`.github`、`.gitignore`、`.gitattributes` …）；
+2. 按 **Ctrl + A** 全选（45 个：文档、源码、`docs`、`lib`、`locale`、`scripts`、`.github`、`.gitignore`、`.gitattributes` …）；
 3. 把选中的内容**拖到 GitHub 页面的虚线框里**（或点 “choose your files” 多选）；
    - 用 **Chrome / Edge**，支持拖文件夹并保留子目录结构；
-   - 拖完等文件列表出现，确认显示的是 **58 files** 左右；
+   - 拖完等文件列表出现，确认显示的是 **45 files** 左右；
 4. 页面下方 Commit changes：
-   - 标题：`feat: DSH启动器 v3.1.0（通用游戏下载与启动框架）`
+   - 标题：`feat: DSH启动器 v3.3.0（本体 / 附属启动器拆分）`
    - 描述可留空；
    - 点 **Commit changes**。
 
@@ -56,7 +58,7 @@ C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-repo\
 打开仓库首页，根目录应该能看到：
 
 ```text
-.github/  docs/  lib/  locale/  plugins/  scripts/
+.github/  docs/  lib/  locale/  scripts/
 .gitattributes  .gitignore  LICENSE  README.md
 client.js  cordis.patch.yml  icon.svg  index.js  package.json
 ```
@@ -93,12 +95,12 @@ client.js  cordis.patch.yml  icon.svg  index.js  package.json
 网页端发布 Release 时顺便创建 tag，不需要命令：
 
 1. 打开仓库右侧 **Releases** → **Create a new release**（或 Draft a new release）；
-2. **Choose a tag** → 输入 `v3.1.0` → 点 **Create new tag: v3.1.0 on publish**；
-3. Release title 填 `DSH启动器 v3.1.0`；
+2. **Choose a tag** → 输入 `v3.3.0` → 点 **Create new tag: v3.3.0 on publish**；
+3. Release title 填 `DSH启动器 v3.3.0`；
 4. 描述里写更新内容（可参考仓库 README 的「验证记录」）；
 5. 最下方 **Attach binaries**：选择本地文件
-   `C:\Users\38357\Desktop\模组开发\dsh-launcher-v3\dist\dsh-launcher-3.1.0.zip`
-   （0.2 MB，含核心包 + 可选适配器 + INSTALL.md + LICENSE）；
+   `C:\Users\38357\Desktop\模组开发\dsh-launcher-v3\dist\dsh-launcher-3.3.0.zip`
+   （约 0.14 MB，纯本体框架 + INSTALL.md + LICENSE，不含任何具体游戏）；
 6. 点 **Publish release**。
 
 之后别人下载这个 zip，解压后按包内 `INSTALL.md` 安装即可。
@@ -125,10 +127,10 @@ client.js  cordis.patch.yml  icon.svg  index.js  package.json
 
 | 限制 | 说明 / 应对 |
 | --- | --- |
-| 单次最多 100 个文件 | 本仓库 58 个，一次够；以后超了分两次上传 |
+| 单次最多 100 个文件 | 本仓库 45 个，一次够；以后超了分两次上传 |
 | 浏览器单文件最大 25 MB | 本项目最大文件约 107 KB，没问题 |
 | 不能上传空文件夹 | 本项目没有空文件夹 |
-| 隐藏文件容易漏 | 按第 3 步核对 `.gitignore`、`.attributes`、`.github` |
+| 隐藏文件容易漏 | 按第 3 步核对 `.gitignore`、`.gitattributes`、`.github` |
 | 没有本地提交历史 | 网页提交直接进默认分支 `main`；无回滚历史需求时够用 |
 | 不能断点续传 | 一次传完；失败就重新拖 |
 
@@ -164,4 +166,26 @@ Settings → Actions → General → 选 “Allow all actions and reusable workf
 - [ ] Actions 里 `tests` 跑出绿色 ✓；
 - [ ] `package.json` 里 `OWNER` 换成你的 GitHub 用户名（网页直接编辑即可）；
 - [ ] `LICENSE` 里版权人改成你的名字；
-- [ ] Release 已发布且附上 `dsh-launcher-3.1.0.zip`。
+- [ ] Release 已发布且附上 `dsh-launcher-3.3.0.zip`。
+
+---
+
+## 10. 第二个仓库：我的世界启动器（附属启动器）
+
+> 上传这个仓库时，把 `_upload\dsh-launcher-minecraft-repo\` 里的 **`catalog.json`** 一起传上去（它在仓库根目录）。本体「推荐目录」默认读的就是这个文件的 raw 地址；上传后可在本体 `cordis.patch.yml` 把 `catalogUrl` 换成你自己的用户名。
+
+v4 起有两个仓库。第二个仓库**不是** DSH 插件，而是一个可下载的附属启动器包（zip）。上传步骤与本体相同，只是目录不同：
+
+| 项目 | 本地目录（已为你准备好） | 仓库名建议 | Release 附件 |
+| --- | --- | --- | --- |
+| 启动器本体 | `C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-repo\`（45 个文件） | `dsh-launcher` | `dsh-launcher-3.3.0.zip` |
+| 我的世界启动器 | `C:\Users\38357\Desktop\模组开发\_upload\dsh-launcher-minecraft-repo\`（21 个文件） | `dsh-launcher-minecraft` | `minecraft-launcher-1.0.0.zip` |
+
+操作要点：
+
+1. GitHub 右上角 **+ → New repository**，名字填 `dsh-launcher-minecraft`，**不要**勾选 README/.gitignore/License；
+2. 进入空仓库页，把 `_upload\dsh-launcher-minecraft-repo\` 里的**内容**（Ctrl+A 全选）拖进去，Commit；
+3. 发布 Release：tag `v1.0.0`，标题「我的世界启动器 v1.0.0」，附件上传 `C:\Users\38357\Desktop\模组开发\dsh-launcher-minecraft\dist\minecraft-launcher-1.0.0.zip`；
+4. 回到本体，在「附属启动器」页填仓库 `<你的用户名>/dsh-launcher-minecraft`，数秒后游戏列表出现 Minecraft；也可以先测试本机 zip 安装。
+
+> 两个仓库的 README / package.json 里都有 `OWNER` 占位，记得把仓库地址改成你自己的用户名（本体的 docs/GITHUB-UPLOAD.md 第 11 节有批量替换命令）。

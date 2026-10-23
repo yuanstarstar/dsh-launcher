@@ -1,6 +1,8 @@
 # 把这个插件上传到 GitHub：手把手教学
 
-> 目标：把本目录（DSH启动器，版本 3.1.0）发布成你自己的 GitHub 仓库，之后能持续更新、发 Release 给别人下载。
+> 目标：把本项目（DSH启动器本体，版本 3.3.0）发布成你自己的 GitHub 仓库，之后能持续更新、发 Release 给别人下载。
+>
+> **v4 起有两个仓库**：① 本体仓库（本目录）——不含任何具体游戏；② 附属启动器仓库 `dsh-launcher-minecraft`（在我的世界启动器项目目录里，见第 11 节）。两个仓库分别发 Release，本体 Release 附件是 `dist/dsh-launcher-3.3.0.zip`，附属启动器 Release 附件是 `minecraft-launcher-1.0.0.zip`。
 > 全程约 15～30 分钟。你只需要一个浏览器 + 一个终端（PowerShell），不需要先懂 Git。
 >
 > 不想安装 Git、只想用浏览器上传？看纯网页版教程：[GITHUB-WEB-UPLOAD.md](GITHUB-WEB-UPLOAD.md)。
@@ -18,7 +20,7 @@
 | `test/tmp/`、`test/*-report.txt` | 测试临时文件与报告 |
 | `node_modules/`、`tmp/` | 依赖与本地杂项 |
 
-会提交的是：`index.js`、`client.js`、`lib/`、`plugins/`、`locale/`、`docs/`、`scripts/`、`package.json`、`cordis.patch.yml`、`README.md`、`LICENSE` 等源码与文档。
+会提交的是：`index.js`、`client.js`、`lib/`、`locale/`、`docs/`、`scripts/`、`package.json`、`cordis.patch.yml`、`README.md`、`LICENSE` 等源码与文档（`plugins/` 已在 v4 拆分出去，不属于本体仓库）。
 
 ---
 
@@ -136,7 +138,7 @@ git add .
 git status
 
 # 6) 提交第一个版本
-git commit -m "feat: DSH启动器 v3.1.0（通用游戏下载与启动框架）"
+git commit -m "feat: DSH启动器 v3.3.0（通用游戏下载与启动框架）"
 
 # 7) 把默认分支改名为 main（GitHub 默认分支）
 git branch -M main
@@ -180,7 +182,7 @@ README 里已经有功能、安装、配置、测试说明，别人打开仓库�
 分发包 zip 是构建产物，不放进仓库，而是作为 **Release 附件**。先在本机构建：
 
 ```powershell
-# 构建 dist/dsh-launcher-3.1.0/ 与 dist/dsh-launcher-3.1.0.zip
+# 构建 dist/dsh-launcher-3.3.0/ 与 dist/dsh-launcher-3.3.0.zip
 node scripts/build-dist.mjs
 ```
 
@@ -192,16 +194,16 @@ node scripts/build-dist.mjs
 
 ```powershell
 # 给当前提交打一个带注释的 tag（版本号要和 package.json 一致）
-git tag -a v3.1.0 -m "DSH启动器 v3.1.0"
-git push origin v3.1.0
+git tag -a v3.3.0 -m "DSH启动器 v3.3.0"
+git push origin v3.3.0
 ```
 
-然后在 GitHub 网页：**Releases** → **Draft a new release** → Choose a tag 选 `v3.1.0` → 标题填 `DSH启动器 v3.1.0` → 说明里贴更新日志 → 最下方拖入 `dist\dsh-launcher-3.1.0.zip` → **Publish release**。
+然后在 GitHub 网页：**Releases** → **Draft a new release** → Choose a tag 选 `v3.3.0` → 标题填 `DSH启动器 v3.3.0` → 说明里贴更新日志 → 最下方拖入 `dist\dsh-launcher-3.3.0.zip` → **Publish release**。
 
 之后别人下载 release 里的 zip，解压后按 [docs/INSTALL.md](INSTALL.md) 安装即可。
 
 > 也可以安装 GitHub CLI（`winget install --id GitHub.cli`），登录后一条命令发布：
-> `gh release create v3.1.0 "dist\dsh-launcher-3.1.0.zip" --title "DSH启动器 v3.1.0" --notes "更新说明"`
+> `gh release create v3.3.0 "dist\dsh-launcher-3.3.0.zip" --title "DSH启动器 v3.3.0" --notes "更新说明"`
 
 ---
 
@@ -243,7 +245,7 @@ git push
 | `fix:` | 修 bug | `fix: 修复面板 Esc 关闭顺序` |
 | `docs:` | 只改文档 | `docs: 补充 Release 发布步骤` |
 | `test:` | 只改测试 | `test: 增加桥接指针隔离断言` |
-| `chore:` | 杂项/依赖/打包 | `chore: 构建 3.1.0 分发包` |
+| `chore:` | 杂项/依赖/打包 | `chore: 构建 3.3.0 分发包` |
 
 ### 自动测试（CI）
 
@@ -336,3 +338,48 @@ git restore .             # 撤销全部未暂存修改（谨慎）
 6. （进阶）提交一次 Pull Request / 在 Actions 里看一次 CI 测试结果。
 
 全部完成后，这个项目就是一个标准的开源仓库：别人可以 Star、提 Issue、下载 Release 安装。
+
+
+---
+
+## 11. 第二个仓库：我的世界启动器（附属启动器）
+
+启动器本体仓库只是框架；**游戏能力来自第二个仓库**，它是一个「附属启动器」包，不是 DSH 插件。
+
+| 项目 | 本地目录 | 仓库名建议 | Release 附件 |
+| --- | --- | --- | --- |
+| 启动器本体 | `C:\Users\38357\Desktop\模组开发\dsh-launcher-v3` | `dsh-launcher` | `dist\dsh-launcher-3.3.0.zip` |
+| 我的世界启动器 | `C:\Users\38357\Desktop\模组开发\dsh-launcher-minecraft` | `dsh-launcher-minecraft` | `dist\minecraft-launcher-1.0.0.zip` |
+
+命令流程（在 `dsh-launcher-minecraft` 目录里执行，Git 用法与本体相同）：
+
+```powershell
+# 1) 在 GitHub 网页新建空仓库 dsh-launcher-minecraft（不勾任何初始化文件）
+# 2) 本地初始化并推送
+$env:Path = "C:\Users\38357\Desktop\模组开发\_tools\mingit\cmd;$env:Path"
+cd C:\Users\38357\Desktop\模组开发\dsh-launcher-minecraft
+git init
+git add .
+git commit -m "feat: 我的世界启动器 v1.0.0（附属启动器）"
+git branch -M main
+git remote add origin https://github.com/<你的用户名>/dsh-launcher-minecraft.git
+git push -u origin main
+
+# 3) 构建并发布 Release（附件是附属启动器 zip，不是本体插件包）
+node scripts/check-package.mjs
+node scripts/adapter-test.mjs
+node scripts/build-dist.mjs
+# 网页 Releases → Draft a new release → tag v1.0.0 → 上传
+# C:\Users\38357\Desktop\模组开发\dsh-launcher-minecraft\dist\minecraft-launcher-1.0.0.zip
+```
+
+**记得把仓库根目录的 `catalog.json` 一起上传**（已放在 `dsh-launcher-minecraft\catalog.json`，`_upload\dsh-launcher-minecraft-repo\` 里也有一份）。它让用户在面板「推荐目录」里直接看到并安装，不用手动填仓库名；本体默认的 `catalogUrl` 就指向这个文件的 raw 地址（
+`https://raw.githubusercontent.com/<你的用户名>/dsh-launcher-minecraft/main/catalog.json`）。上传后可以把本体 `cordis.patch.yml` 里的 `catalogUrl` 改成你自己的用户名。
+
+发布后，打开启动器面板的「附属启动器」页，填 `<你的用户名>/dsh-launcher-minecraft` 即可安装；也可以在本体对话里说：
+
+```text
+安装附属启动器，GitHub 仓库 <你的用户名>/dsh-launcher-minecraft
+```
+
+> 这个仓库可以独立迭代：加载器更新、下载源变化，只需要在本仓库发新版本 zip，本体不需要重新发版。

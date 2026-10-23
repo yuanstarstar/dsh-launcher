@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-// Host 端离线断言：插件元信息、25 个 Agent 工具、系统提示词、HTTP API 路由与错误映射。
+// Host 端离线断言：插件元信息、30 个 Agent 工具、系统提示词、HTTP API 路由与错误映射。
 // 不依赖真实网络：游戏库为空，只测试框架行为（提供者测试见 provider-test.mjs）。
 import path from 'node:path'
 import fsp from 'node:fs/promises'
@@ -180,14 +180,19 @@ check('1 个系统提示词段 order=61', () => {
   assertEqual(host.promptSections[0].order, 61)
   assert(host.promptSections[0].text.length > 100, '提示词过短')
 })
-check('25 个 launcher_* 工具', () => {
+check('30 个 launcher_* 工具', () => {
   const names = [...host.tools.keys()]
-  assertEqual(names.length, 25)
+  assertEqual(names.length, 30)
   const expected = [
     'launcher_status',
     'launcher_list_games',
     'launcher_add_game',
     'launcher_remove_game',
+    'launcher_list_sublaunchers',
+    'launcher_install_sublauncher',
+    'launcher_update_sublauncher',
+    'launcher_remove_sublauncher',
+    'launcher_list_catalog',
     'launcher_list_versions',
     'launcher_list_loaders',
     'launcher_search_content',
@@ -241,6 +246,33 @@ await checkAsync('GET /instances（空）', async () => {
   const { status, json } = await callApi(host, 'GET', '/dsh-launcher/api/instances')
   assertEqual(status, 200)
   assertEqual(json.data.instances, [])
+})
+await checkAsync('GET /catalog（空目录）', async () => {
+  const { status, json } = await callApi(host, 'GET', '/dsh-launcher/api/catalog')
+  assertEqual(status, 200)
+  assert(Array.isArray(json.data.entries), 'entries 不是数组')
+  assertEqual(json.data.entries, [])
+})
+await checkAsync('GET /sublaunchers（空）', async () => {
+  const { status, json } = await callApi(host, 'GET', '/dsh-launcher/api/sublaunchers')
+  assertEqual(status, 200)
+  assert(Array.isArray(json.data.launchers), 'launchers 不是数组')
+  assertEqual(json.data.launchers, [])
+})
+await checkAsync('POST /sublaunchers/install 缺来源 → 400', async () => {
+  const { status, json } = await callApi(host, 'POST', '/dsh-launcher/api/sublaunchers/install', {})
+  assertEqual(status, 400)
+  assert(json.ok === false, 'ok 不为 false')
+  assert(json.error && json.error.length > 2, '错误信息缺失')
+})
+await checkAsync('POST /sublaunchers/nope/check → 404', async () => {
+  const { status, json } = await callApi(host, 'POST', '/dsh-launcher/api/sublaunchers/nope/check')
+  assertEqual(status, 404)
+  assertEqual(json.ok, false)
+})
+await checkAsync('DELETE /sublaunchers/nope → 404', async () => {
+  const { status } = await callApi(host, 'DELETE', '/dsh-launcher/api/sublaunchers/nope')
+  assertEqual(status, 404)
 })
 await checkAsync('GET /instances/nope → 404', async () => {
   const { status, json } = await callApi(host, 'GET', '/dsh-launcher/api/instances/nope')
@@ -341,6 +373,25 @@ await checkAsync('launcher_delete_instance 需要 confirm 确认', async () => {
     message = String((error && error.message) || error)
   }
   assert(/confirm/.test(message), '错误信息：' + message)
+})
+await checkAsync('launcher_list_sublaunchers 空列表', async () => {
+  const result = await host.tools.get('launcher_list_sublaunchers').execute({})
+  assert(Array.isArray(result.launchers), 'launchers 不是数组')
+  assertEqual(result.launchers, [])
+})
+await checkAsync('launcher_remove_sublauncher 需要 confirm 确认', async () => {
+  let message = ''
+  try {
+    await host.tools.get('launcher_remove_sublauncher').execute({ launcher: 'x' })
+  } catch (error) {
+    message = String((error && error.message) || error)
+  }
+  assert(/confirm/.test(message), '错误信息：' + message)
+})
+await checkAsync('launcher_list_catalog 可执行且 entries 为数组', async () => {
+  const result = await host.tools.get('launcher_list_catalog').execute({})
+  assert(Array.isArray(result.entries), 'entries 不是数组')
+  assertEqual(result.entries, [])
 })
 await checkAsync('launcher_set_config 生效', async () => {
   const result = await host.tools.get('launcher_set_config').execute({ downloadConcurrency: 12, retries: 1 })

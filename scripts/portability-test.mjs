@@ -88,7 +88,7 @@ const USER_LOCAL_PATTERNS = [
   /\/home\/[A-Za-z0-9._-]+/,
   /模组开发/,
 ]
-const LOCAL_EXEMPT = new Set(['docs/ARCHITECTURE-v3.md', 'docs/PROVIDERS.md'])
+const LOCAL_EXEMPT = new Set(['docs/ARCHITECTURE.md', 'docs/PROVIDERS.md'])
 const RUNTIME_FILES = [
   'index.js',
   'client.js',
@@ -98,6 +98,8 @@ const RUNTIME_FILES = [
   'docs/USAGE.md',
   'docs/INSTALL.md',
   'docs/GAME-ADAPTER.md',
+  'docs/SUB-LAUNCHER.md',
+  'docs/ARCHITECTURE.md',
   'icon.svg',
 ]
 const runtimeList = [...RUNTIME_FILES]
@@ -137,24 +139,19 @@ const pkg = pkgText ? JSON.parse(pkgText) : null
 check('package.json 可解析', Boolean(pkg))
 if (pkg) {
   check('版本号形如 x.y.z', /^\d+\.\d+\.\d+$/.test(String(pkg.version)))
-  check('files 包含运行时文件', ['index.js', 'client.js', 'lib/', 'cordis.patch.yml', 'locale/*.json', 'icon.svg', 'docs/USAGE.md', 'docs/INSTALL.md'].every((entry) => (pkg.files || []).includes(entry)))
+  check('files 包含运行时文件', ['index.js', 'client.js', 'lib/', 'cordis.patch.yml', 'locale/*.json', 'icon.svg', 'docs/USAGE.md', 'docs/INSTALL.md', 'docs/SUB-LAUNCHER.md'].every((entry) => (pkg.files || []).includes(entry)))
+
   check('导出 ./lib/core/registry.js', Boolean(pkg.exports && pkg.exports['./lib/core/registry.js']))
   check('含 build:dist 脚本', Boolean(pkg.scripts && pkg.scripts['build:dist']))
   check('package.json 无绝对路径', !/[A-Za-z]:\\/.test(pkgText) && !pkgText.includes('模组开发'))
 }
 
-// 5) 适配器包可独立安装
-const adapterDir = path.join(ROOT, 'plugins', 'minecraft-adapter')
-check('适配器包存在', fs.existsSync(path.join(adapterDir, 'package.json')))
-if (fs.existsSync(path.join(adapterDir, 'package.json'))) {
-  const adapterPkg = JSON.parse(fs.readFileSync(path.join(adapterDir, 'package.json'), 'utf8'))
-  const deps = { ...(adapterPkg.dependencies || {}), ...(adapterPkg.peerDependencies || {}), ...(adapterPkg.optionalDependencies || {}) }
-  check('适配器不依赖核心包', !Object.keys(deps).some((key) => key === '@local/dsh-launcher'))
-  check('适配器有自身 patch', fs.existsSync(path.join(adapterDir, 'cordis.patch.yml')))
-  const adapterPatch = fs.readFileSync(path.join(adapterDir, 'cordis.patch.yml'), 'utf8')
-  const adapterEffective = adapterPatch.split(/\r?\n/).filter((line) => !line.trim().startsWith('#')).join('\n')
-  check('适配器 patch 无绝对路径', !/[A-Za-z]:\\/.test(adapterEffective))
-}
+// 5) 本体不含任何具体游戏/启动器实现，只提供附属启动器管理能力
+check('本体不内置 plugins 目录', !fs.existsSync(path.join(ROOT, 'plugins')))
+check('本体无 lib/games 内置游戏', !fs.existsSync(path.join(ROOT, 'lib', 'games')))
+check('附属启动器管理模块存在', fs.existsSync(path.join(ROOT, 'lib', 'core', 'sublaunchers.js')))
+check('附属启动器开发文档存在', fs.existsSync(path.join(ROOT, 'docs', 'SUB-LAUNCHER.md')))
+check('本体工具里没有内置游戏名', !read('index.js') || !/minecraft|我的世界/i.test(read('index.js')))
 
 // 6) 构建脚本
 const buildScript = read('scripts/build-dist.mjs')
@@ -163,6 +160,8 @@ if (buildScript) {
   check('构建脚本排除本机数据目录', ['data', 'test', 'tmp', 'node_modules'].every((name) => buildScript.includes(`'${name}'`)))
   check('构建脚本生成 zip', /Compress-Archive|\.zip/.test(buildScript))
   check('构建脚本复制 INSTALL.md', /INSTALL\.md/.test(buildScript))
+  check('构建脚本含附属启动器文档', /SUB-LAUNCHER\.md/.test(buildScript))
+  check('构建脚本打包不含 plugins', !/ROOT_DIRS = \[[^\]]*'plugins'/.test(buildScript))
 }
 
 // 7) 桥接指针位置（用户主目录）
