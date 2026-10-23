@@ -12,3 +12,6 @@
       config:
         downloadConcurrency: 16
         retries: 3
+        # 推荐目录（catalog）地址：面板「附属启动器」页的「推荐/精选」列表来自这个 JSON。
+        # 换成你自己的目录文件即可；留空则读取数据根下的 catalog.json。
+        catalogUrl: 'https://raw.githubusercontent.com/yuanstarstar/dsh-launcher-minecraft/main/catalog.json'

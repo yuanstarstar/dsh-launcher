@@ -28,6 +28,7 @@ window.__ModuleLoader__.load({
 		const ENTRY_ORDER = 60;
 
 		const PROVIDERS = ["github", "url", "manual"];
+		const SUB_SOURCE_TYPES = ["github", "url", "file"];
 
 		// ------------------------------------------------------------------
 		// 界面文案（中文）。所有用户可见文本都必须走这里，面板里不直接拼句子。
@@ -77,6 +78,8 @@ window.__ModuleLoader__.load({
 			"jobs.kind.install": "安装",
 			"jobs.kind.launch": "启动",
 			"jobs.kind.content": "内容",
+			"jobs.kind.sublauncherInstall": "附属启动器安装",
+			"jobs.kind.sublauncherUpdate": "附属启动器更新",
 			"jobs.progress": "进度 {percent}%",
 			"jobs.bytes": "已下载 {bytes}",
 			"games.jobStatus.queued": "排队中",
@@ -222,6 +225,71 @@ window.__ModuleLoader__.load({
 			"settings.saving": "保存中…",
 			"settings.invalidConcurrency": "下载并发必须是 1–32 之间的整数",
 			"settings.invalidRetries": "重试次数必须是 0–10 之间的整数",
+			"tab.sublaunchers": "附属启动器",
+			"sublauncher.title": "附属启动器",
+			"sublauncher.subtitle": "附属启动器是独立项目；本启动器本体不含任何游戏。从 GitHub Release 或 zip 地址安装后，游戏会自动出现在「游戏」页。",
+			"sublauncher.installTitle": "安装附属启动器",
+			"sublauncher.installHint": "支持 GitHub 仓库、zip 地址或本机文件；安装完成后游戏会自动出现在「游戏」页。",
+			"sublauncher.sourceType": "来源类型",
+			"sublauncher.sourceType.github": "GitHub 仓库",
+			"sublauncher.sourceType.url": "zip 地址",
+			"sublauncher.sourceType.file": "本机文件路径",
+			"sublauncher.repo": "GitHub 仓库",
+			"sublauncher.repoPh": "owner/name",
+			"sublauncher.repoHint": "仓库的 Release 中需要包含 zip 资产。",
+			"sublauncher.url": "zip 地址",
+			"sublauncher.urlPh": "https://example.com/launcher.zip",
+			"sublauncher.urlHint": "直接指向 zip 包的下载地址。",
+			"sublauncher.file": "本机文件路径",
+			"sublauncher.filePh": "D:/downloads/launcher.zip",
+			"sublauncher.fileHint": "填写本机 zip 包路径。",
+			"sublauncher.advanced": "高级选项",
+			"sublauncher.advancedHide": "收起高级选项",
+			"sublauncher.assetPattern": "资产匹配模式",
+			"sublauncher.assetPatternPh": "例如 launcher-*.zip",
+			"sublauncher.assetPatternHint": "用于在 Release 资产中挑选 zip；留空时取第一个 zip。",
+			"sublauncher.install": "安装",
+			"sublauncher.installing": "安装中…",
+			"sublauncher.installStarted": "已开始安装附属启动器",
+			"sublauncher.needSource": "请填写仓库、zip 地址或本机文件路径",
+			"sublauncher.installProgress": "安装进度",
+			"sublauncher.updateProgress": "更新进度",
+			"sublauncher.installed": "已安装的附属启动器",
+			"sublauncher.empty": "还没有附属启动器。可以从 GitHub 仓库或 zip 地址安装一个（例如某个游戏的官方附属启动器项目）。",
+			"sublauncher.loading": "正在读取附属启动器列表…",
+			"sublauncher.source": "来源",
+			"sublauncher.source.repo": "GitHub 仓库",
+			"sublauncher.source.url": "zip 地址",
+			"sublauncher.source.file": "本机文件",
+			"sublauncher.version": "版本 {version}",
+			"sublauncher.gamesCount": "提供游戏 {count} 个",
+			"sublauncher.updateAvailable": "有更新可用",
+			"sublauncher.upToDate": "已是最新版本",
+			"sublauncher.check": "检查更新",
+			"sublauncher.checking": "检查中…",
+			"sublauncher.update": "更新",
+			"sublauncher.updating": "更新中…",
+			"sublauncher.updateStarted": "已开始更新附属启动器",
+			"sublauncher.delete": "删除",
+			"sublauncher.deleteConfirm": "确认删除附属启动器「{name}」？",
+			"sublauncher.deleteHint": "删除后由它提供的游戏会从「游戏」页消失，已安装的实例文件不会删除。",
+			"sublauncher.deleted": "已删除附属启动器",
+			"catalog.title": "推荐目录",
+			"catalog.hint": "从推荐目录一键安装附属启动器；安装完成后游戏会自动出现在「游戏」页。",
+			"catalog.refresh": "刷新推荐",
+			"catalog.loading": "正在读取推荐目录…",
+			"catalog.empty": "推荐目录暂时没有可用的附属启动器",
+			"catalog.emptyHint": "可以继续用下方的表单手动填写仓库或 zip 地址安装。",
+			"catalog.error": "读取推荐目录失败：{error}",
+			"catalog.install": "安装",
+			"catalog.installing": "安装中…",
+			"catalog.installed": "已安装",
+			"catalog.update": "更新",
+			"catalog.updating": "更新中…",
+			"catalog.updateAvailable": "可更新",
+			"catalog.needSource": "该条目没有可用的安装来源，请手动填写仓库或 URL。",
+			"catalog.description": "简介",
+			"catalog.manualHint": "推荐目录加载失败或没有条目时，仍可手动填写仓库 / URL / 本机文件安装。",
 		};
 
 		// ------------------------------------------------------------------
@@ -272,6 +340,8 @@ window.__ModuleLoader__.load({
 			"jobs.kind.install": "Install",
 			"jobs.kind.launch": "Launch",
 			"jobs.kind.content": "Content",
+			"jobs.kind.sublauncherInstall": "Sub-launcher install",
+			"jobs.kind.sublauncherUpdate": "Sub-launcher update",
 			"jobs.progress": "Progress {percent}%",
 			"jobs.bytes": "Downloaded {bytes}",
 			"games.jobStatus.queued": "Queued",
@@ -417,6 +487,71 @@ window.__ModuleLoader__.load({
 			"settings.saving": "Saving…",
 			"settings.invalidConcurrency": "Download concurrency must be an integer between 1 and 32",
 			"settings.invalidRetries": "Retries must be an integer between 0 and 10",
+			"tab.sublaunchers": "Sub-launchers",
+			"sublauncher.title": "Sub-launchers",
+			"sublauncher.subtitle": "Sub-launchers are separate projects; this launcher core contains no games. After installing from a GitHub Release or a zip URL, games appear automatically on the Games page.",
+			"sublauncher.installTitle": "Install a sub-launcher",
+			"sublauncher.installHint": "Supports GitHub repositories, zip URLs and local files; games appear automatically on the Games page after installation.",
+			"sublauncher.sourceType": "Source type",
+			"sublauncher.sourceType.github": "GitHub repository",
+			"sublauncher.sourceType.url": "zip URL",
+			"sublauncher.sourceType.file": "Local file path",
+			"sublauncher.repo": "GitHub repository",
+			"sublauncher.repoPh": "owner/name",
+			"sublauncher.repoHint": "The repository release must contain a zip asset.",
+			"sublauncher.url": "zip URL",
+			"sublauncher.urlPh": "https://example.com/launcher.zip",
+			"sublauncher.urlHint": "Direct download URL of the zip package.",
+			"sublauncher.file": "Local file path",
+			"sublauncher.filePh": "D:/downloads/launcher.zip",
+			"sublauncher.fileHint": "Path of a local zip package.",
+			"sublauncher.advanced": "Advanced options",
+			"sublauncher.advancedHide": "Hide advanced options",
+			"sublauncher.assetPattern": "Asset pattern",
+			"sublauncher.assetPatternPh": "for example launcher-*.zip",
+			"sublauncher.assetPatternHint": "Picks a zip asset from the release; the first zip is used when empty.",
+			"sublauncher.install": "Install",
+			"sublauncher.installing": "Installing…",
+			"sublauncher.installStarted": "Sub-launcher installation started",
+			"sublauncher.needSource": "Please enter a repository, zip URL or local file path",
+			"sublauncher.installProgress": "Install progress",
+			"sublauncher.updateProgress": "Update progress",
+			"sublauncher.installed": "Installed sub-launchers",
+			"sublauncher.empty": "No sub-launchers installed yet. Install one from a GitHub repository or zip URL (for example the official sub-launcher project of a game).",
+			"sublauncher.loading": "Loading sub-launchers…",
+			"sublauncher.source": "Source",
+			"sublauncher.source.repo": "GitHub repository",
+			"sublauncher.source.url": "zip URL",
+			"sublauncher.source.file": "Local file",
+			"sublauncher.version": "Version {version}",
+			"sublauncher.gamesCount": "Provides {count} games",
+			"sublauncher.updateAvailable": "Update available",
+			"sublauncher.upToDate": "Already up to date",
+			"sublauncher.check": "Check for updates",
+			"sublauncher.checking": "Checking…",
+			"sublauncher.update": "Update",
+			"sublauncher.updating": "Updating…",
+			"sublauncher.updateStarted": "Sub-launcher update started",
+			"sublauncher.delete": "Delete",
+			"sublauncher.deleteConfirm": "Delete sub-launcher \"{name}\"?",
+			"sublauncher.deleteHint": "Its games disappear from the Games page; installed instance files are kept.",
+			"sublauncher.deleted": "Sub-launcher deleted",
+			"catalog.title": "Recommended catalog",
+			"catalog.hint": "Install sub-launchers from the recommended catalog; games appear on the Games page once installed.",
+			"catalog.refresh": "Refresh catalog",
+			"catalog.loading": "Loading catalog…",
+			"catalog.empty": "No sub-launchers in the catalog yet",
+			"catalog.emptyHint": "You can still install manually with the form below.",
+			"catalog.error": "Failed to load catalog: {error}",
+			"catalog.install": "Install",
+			"catalog.installing": "Installing…",
+			"catalog.installed": "Installed",
+			"catalog.update": "Update",
+			"catalog.updating": "Updating…",
+			"catalog.updateAvailable": "Update available",
+			"catalog.needSource": "This entry has no install source; please enter a repository or URL manually.",
+			"catalog.description": "Description",
+			"catalog.manualHint": "If the catalog fails to load or is empty, you can still install with a repository / URL / local file below.",
 		};
 
 		// ------------------------------------------------------------------
@@ -660,6 +795,8 @@ window.__ModuleLoader__.load({
 		function jobKindLabel(t, job) {
 			const kind = scalarText(job && job.kind, "");
 			if (kind === "install" || kind === "launch" || kind === "content") return t("jobs.kind." + kind);
+			if (kind === "sublauncher-install") return t("jobs.kind.sublauncherInstall");
+			if (kind === "sublauncher-update") return t("jobs.kind.sublauncherUpdate");
 			return brandSafe(scalarText(job && job.title, ""));
 		}
 
@@ -727,6 +864,37 @@ window.__ModuleLoader__.load({
 			if (id === "url") return t("addGame.providerUrl");
 			if (id === "manual") return t("addGame.providerManual");
 			return brandSafe(id || t("common.none"));
+		}
+
+		function subLauncherId(launcher) {
+			return scalarText(launcher && launcher.id, "");
+		}
+
+		function subLauncherLabel(launcher) {
+			return brandSafe(scalarText(launcher && (launcher.label || launcher.name || launcher.id), "-"));
+		}
+
+		function subLauncherVersion(launcher) {
+			return brandSafe(scalarText(launcher && (launcher.version || launcher.installedVersion), "-"));
+		}
+
+		function subLauncherSourceText(t, launcher) {
+			const repo = brandSafe(scalarText(launcher && launcher.repo, ""));
+			if (repo) return t("sublauncher.source.repo") + "：" + repo;
+			const url = brandSafe(scalarText(launcher && launcher.url, ""));
+			if (url) return t("sublauncher.source.url") + "：" + url;
+			const file = brandSafe(scalarText(launcher && launcher.file, ""));
+			if (file) return t("sublauncher.source.file") + "：" + file;
+			const source = scalarText(launcher && launcher.source, "");
+			if (source === "github") return t("sublauncher.source.repo");
+			if (source === "url") return t("sublauncher.source.url");
+			if (source === "file") return t("sublauncher.source.file");
+			return brandSafe(source);
+		}
+
+		function subLauncherGamesCount(launcher) {
+			const games = launcher && Array.isArray(launcher.games) ? launcher.games : [];
+			return games.length;
 		}
 
 		function instanceLoaderType(instance) {
@@ -1172,6 +1340,7 @@ window.__ModuleLoader__.load({
 			const currentGame = gameById(games, gameId);
 			const tabs = [
 				{ id: "games", label: t("tab.games") },
+				{ id: "sublaunchers", label: t("tab.sublaunchers") },
 				{ id: "addGame", label: t("tab.addGame") },
 				{ id: "settings", label: t("tab.settings") },
 			];
@@ -1191,6 +1360,8 @@ window.__ModuleLoader__.load({
 			let body = null;
 			if (tab === "addGame") {
 				body = h(AddGameTab, { snapshot: data, games: games, t: t, toast: toast, refresh: refresh, onCreated: onCreatedGame });
+			} else if (tab === "sublaunchers") {
+				body = h(SubLaunchersTab, { snapshot: data, t: t, toast: toast, refresh: refresh });
 			} else if (tab === "settings") {
 				body = h(SettingsTab, { config: config, snapshot: data, t: t, toast: toast, refresh: refresh });
 			} else if (currentGame) {
@@ -2239,6 +2410,398 @@ window.__ModuleLoader__.load({
 						: h("div", { className: "dsl_empty_hint" }, t("addGame.addedEmpty")),
 					h("div", { className: "dsl_hint" }, t("addGame.addedHint"))
 				)
+			);
+		}
+
+		// ------------------------------------------------------------------
+		// 附属启动器 tab：说明 / 安装表单（仓库、zip 地址、本机文件）/ 已安装列表。
+		// 附属启动器是独立项目；本启动器本体不含任何游戏。
+		// ------------------------------------------------------------------
+		function SubLaunchersTab(props) {
+			const t = makeT(props.t);
+			const toast = typeof props.toast === "function" ? props.toast : () => {};
+			const [launchers, setLaunchers] = react.useState([]);
+			const [loading, setLoading] = react.useState(true);
+			const [loadError, setLoadError] = react.useState("");
+			const [sourceType, setSourceType] = react.useState("github");
+			const [repo, setRepo] = react.useState("");
+			const [url, setUrl] = react.useState("");
+			const [file, setFile] = react.useState("");
+			const [assetPattern, setAssetPattern] = react.useState("");
+			const [advancedOpen, setAdvancedOpen] = react.useState(false);
+			const [installing, setInstalling] = react.useState(false);
+			const [installJobId, setInstallJobId] = react.useState("");
+			const [checkBusy, setCheckBusy] = react.useState({});
+			const [updateBusy, setUpdateBusy] = react.useState({});
+			const [deleteTarget, setDeleteTarget] = react.useState("");
+			const [deleteBusy, setDeleteBusy] = react.useState(false);
+			const [updateJobId, setUpdateJobId] = react.useState("");
+			const [catalog, setCatalog] = react.useState([]);
+			const [catalogLoading, setCatalogLoading] = react.useState(true);
+			const [catalogError, setCatalogError] = react.useState("");
+			const [catalogBusy, setCatalogBusy] = react.useState({});
+			const tRef = react.useRef(t);
+			const toastRef = react.useRef(toast);
+			react.useEffect(() => {
+				tRef.current = t;
+				toastRef.current = toast;
+			});
+			const loadLaunchers = react.useCallback(async () => {
+				setLoading(true);
+				try {
+					const data = await get("/sublaunchers");
+					const list = data && Array.isArray(data.launchers) ? data.launchers : Array.isArray(data) ? data : [];
+					setLaunchers(list);
+					setLoadError("");
+				} catch (error) {
+					setLoadError(errText(tRef.current, error));
+				}
+				setLoading(false);
+			}, []);
+			react.useEffect(() => {
+				loadLaunchers();
+			}, [loadLaunchers]);
+			const loadCatalog = react.useCallback(async (force) => {
+				setCatalogLoading(true);
+				try {
+					const data = await get(force ? "/catalog?refresh=1" : "/catalog");
+					const entries = data && Array.isArray(data.entries) ? data.entries : Array.isArray(data) ? data : [];
+					setCatalog(entries);
+					setCatalogError(data && data.error ? brandSafe(scalarText(data.error, "")) : "");
+				} catch (error) {
+					setCatalogError(errText(tRef.current, error));
+				}
+				setCatalogLoading(false);
+			}, []);
+			react.useEffect(() => {
+				loadCatalog(false);
+			}, [loadCatalog]);
+			const list = Array.isArray(launchers) ? launchers : [];
+			const sourceId = scalarText(sourceType, "github");
+			function subPath(id, suffix) {
+				return "/sublaunchers/" + encodeURIComponent(id) + (suffix || "");
+			}
+			function buildSpec() {
+				const spec = {};
+				if (sourceId === "url") spec.url = url.trim();
+				else if (sourceId === "file") spec.file = file.trim();
+				else spec.repo = repo.trim();
+				const pattern = assetPattern.trim();
+				if (pattern) spec.assetPattern = pattern;
+				return spec;
+			}
+			function validate() {
+				if (sourceId === "url") return url.trim() ? "" : t("sublauncher.needSource");
+				if (sourceId === "file") return file.trim() ? "" : t("sublauncher.needSource");
+				return repo.trim() ? "" : t("sublauncher.needSource");
+			}
+			async function installSub() {
+				const problem = validate();
+				if (problem) {
+					toast(problem);
+					return;
+				}
+				setInstalling(true);
+				try {
+					const data = await post("/sublaunchers/install", buildSpec());
+					const jobId = scalarText(data && (data.jobId || data.id), "");
+					setInstallJobId(jobId);
+					toast(t("sublauncher.installStarted"));
+					setRepo("");
+					setUrl("");
+					setFile("");
+					setAssetPattern("");
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setInstalling(false);
+			}
+			async function checkOne(launcher) {
+				const id = subLauncherId(launcher);
+				if (!id) return;
+				setCheckBusy((prev) => Object.assign({}, prev, { [id]: true }));
+				try {
+					const data = await post(subPath(id, "/check"));
+					const available = data && (data.updateAvailable === true || data.hasUpdate === true);
+					toast(available ? t("sublauncher.updateAvailable") : t("sublauncher.upToDate"));
+					await loadLaunchers();
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setCheckBusy((prev) => {
+					const next = Object.assign({}, prev);
+					delete next[id];
+					return next;
+				});
+			}
+			async function updateOne(launcher) {
+				const id = subLauncherId(launcher);
+				if (!id) return;
+				setUpdateBusy((prev) => Object.assign({}, prev, { [id]: true }));
+				try {
+					const data = await post(subPath(id, "/update"));
+					const jobId = scalarText(data && (data.jobId || data.id), "");
+					setUpdateJobId(jobId);
+					toast(t("sublauncher.updateStarted"));
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setUpdateBusy((prev) => {
+					const next = Object.assign({}, prev);
+					delete next[id];
+					return next;
+				});
+			}
+			async function updateCatalogEntry(entry) {
+				const entryId = scalarText(entry && entry.id, "");
+				if (!entryId) return;
+				setCatalogBusy((prev) => Object.assign({}, prev, { [entryId]: true }));
+				try {
+					const data = await post(subPath(entryId, "/update"));
+					const jobId = scalarText(data && (data.jobId || data.id), "");
+					setUpdateJobId(jobId);
+					toast(t("sublauncher.updateStarted"));
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setCatalogBusy((prev) => {
+					const next = Object.assign({}, prev);
+					delete next[entryId];
+					return next;
+				});
+			}
+			async function installCatalog(entry) {
+				const entryId = scalarText(entry && entry.id, "");
+				const catalogRepo = scalarText(entry && entry.repo, "");
+				const catalogUrl = scalarText(entry && entry.url, "");
+				const catalogFile = scalarText(entry && entry.file, "");
+				const spec = catalogRepo ? { repo: catalogRepo } : catalogUrl ? { url: catalogUrl } : catalogFile ? { file: catalogFile } : null;
+				if (!spec) {
+					toast(t("catalog.needSource"));
+					return;
+				}
+				setCatalogBusy((prev) => Object.assign({}, prev, { [entryId]: true }));
+				try {
+					const data = await post("/sublaunchers/install", spec);
+					const jobId = scalarText(data && (data.jobId || data.id), "");
+					setInstallJobId(jobId);
+					toast(t("sublauncher.installStarted"));
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setCatalogBusy((prev) => {
+					const next = Object.assign({}, prev);
+					delete next[entryId];
+					return next;
+				});
+			}
+			async function removeOne(launcher) {
+				const id = subLauncherId(launcher);
+				if (!id) return;
+				setDeleteBusy(true);
+				try {
+					await del(subPath(id));
+					toast(t("sublauncher.deleted"));
+					setDeleteTarget("");
+					await loadLaunchers();
+					if (typeof props.refresh === "function") props.refresh();
+				} catch (error) {
+					toast(t("toast.failed", { error: errText(t, error) }));
+				}
+				setDeleteBusy(false);
+			}
+			function finishJob(job, clear) {
+				const failed = job && typeof job.status === "string" && job.status === "failed";
+				if (failed) toast(t("toast.jobFailed", { error: errText(t, job && job.error) }));
+				else toast(t("toast.jobDone"));
+				clear("");
+				loadLaunchers();
+				loadCatalog(false);
+				if (typeof props.refresh === "function") props.refresh();
+			}
+			const rows = list.map((launcher) => {
+				const id = subLauncherId(launcher);
+				const checking = checkBusy[id] === true;
+				const updating = updateBusy[id] === true;
+				const available = launcher && (launcher.updateAvailable === true || launcher.hasUpdate === true);
+				const sourceText = subLauncherSourceText(t, launcher);
+				return h(
+					"div",
+					{ key: id || subLauncherLabel(launcher), className: "dsl_card" },
+					h(
+						"div",
+						{ className: "dsl_card_head" },
+						h("span", { className: "dsl_card_name", title: subLauncherLabel(launcher) }, subLauncherLabel(launcher)),
+						h(Badge, { tone: "info" }, t("sublauncher.version", { version: subLauncherVersion(launcher) })),
+						available ? h(Badge, { tone: "warn" }, t("sublauncher.updateAvailable")) : null
+					),
+					h(
+						"div",
+						{ className: "dsl_card_meta" },
+						h(MetaItem, { label: t("sublauncher.source"), value: sourceText, title: sourceText }),
+						h(MetaItem, { label: t("sublauncher.sourceType"), value: t("sublauncher.gamesCount", { count: String(subLauncherGamesCount(launcher)) }) })
+					),
+					h(
+						"div",
+						{ className: "dsl_row" },
+						h(Btn, { disabled: checking || updating, onClick: () => checkOne(launcher) }, checking ? t("sublauncher.checking") : t("sublauncher.check")),
+						available ? h(Btn, { variant: "primary", disabled: updating || checking, onClick: () => updateOne(launcher) }, updating ? t("sublauncher.updating") : t("sublauncher.update")) : null,
+						deleteTarget === id
+							? h(
+									"span",
+									{ className: "dsl_row" },
+									h("span", { className: "dsl_hint" }, t("sublauncher.deleteConfirm", { name: subLauncherLabel(launcher) })),
+									h(Btn, { variant: "danger", disabled: deleteBusy, onClick: () => removeOne(launcher) }, t("common.confirm")),
+									h(Btn, { variant: "ghost", onClick: () => setDeleteTarget("") }, t("common.cancel"))
+								)
+							: h(Btn, { variant: "ghost", onClick: () => setDeleteTarget(id) }, t("sublauncher.delete"))
+					),
+					deleteTarget === id ? h("div", { className: "dsl_hint" }, t("sublauncher.deleteHint")) : null
+				);
+			});
+			const catalogEntries = Array.isArray(catalog) ? catalog : [];
+			const catalogRows = catalogEntries.map((entry) => {
+				const entryId = scalarText(entry && entry.id, "");
+				const entryLabel = brandSafe(scalarText(entry && (entry.label || entry.title || entry.id), "-"));
+				const entryDescription = brandSafe(scalarText(entry && entry.description, ""));
+				const entryVersion = brandSafe(scalarText(entry && entry.version, ""));
+				const entrySource = subLauncherSourceText(t, entry);
+				const entryInstalled = entry && entry.installed === true;
+				const entryAvailable = entry && (entry.updateAvailable === true || entry.hasUpdate === true);
+				const busy = catalogBusy[entryId] === true;
+				return h(
+					"div",
+					{ key: entryId || entryLabel, className: "dsl_card" },
+					h(
+						"div",
+						{ className: "dsl_card_head" },
+						h("span", { className: "dsl_card_name", title: entryLabel }, entryLabel),
+						entryVersion ? h(Badge, { tone: "info" }, t("sublauncher.version", { version: entryVersion })) : null,
+						entryInstalled ? h(Badge, { tone: "on" }, t("catalog.installed")) : null,
+						entryAvailable ? h(Badge, { tone: "warn" }, t("catalog.updateAvailable")) : null
+					),
+					entryDescription || entrySource
+						? h(
+								"div",
+								{ className: "dsl_card_meta" },
+								entryDescription ? h(MetaItem, { label: t("catalog.description"), value: entryDescription, title: entryDescription }) : null,
+								entrySource ? h(MetaItem, { label: t("sublauncher.source"), value: entrySource, title: entrySource }) : null
+							)
+						: null,
+					h(
+						"div",
+						{ className: "dsl_row" },
+						entryInstalled && entryAvailable
+							? h(Btn, { variant: "primary", disabled: busy, onClick: () => updateCatalogEntry(entry) }, busy ? t("catalog.updating") : t("catalog.update"))
+							: entryInstalled
+								? null
+								: h(Btn, { variant: "primary", disabled: busy, onClick: () => installCatalog(entry) }, busy ? t("catalog.installing") : t("catalog.install"))
+					)
+				);
+			});
+			const installSection = h(
+				"div",
+				{ className: "dsl_section" },
+				h("div", { className: "dsl_section_title" }, t("sublauncher.installTitle")),
+				h("div", { className: "dsl_hint" }, t("sublauncher.installHint")),
+				h(
+					"div",
+					{ className: "dsl_radios" },
+					SUB_SOURCE_TYPES.map((type) =>
+						h(
+							"label",
+							{ key: type, className: "dsl_radio" },
+							h("input", { type: "radio", name: "sublauncher-source", checked: sourceId === type, onChange: () => setSourceType(type) }),
+							h("span", null, t("sublauncher.sourceType." + type))
+						)
+					)
+				),
+				sourceId === "url"
+					? h(
+							Field,
+							{ label: t("sublauncher.url"), hint: t("sublauncher.urlHint") },
+							h("input", { className: "dsl_input", value: url, placeholder: t("sublauncher.urlPh"), onChange: (event) => setUrl(event.target.value) })
+						)
+					: sourceId === "file"
+						? h(
+								Field,
+								{ label: t("sublauncher.file"), hint: t("sublauncher.fileHint") },
+								h("input", { className: "dsl_input", value: file, placeholder: t("sublauncher.filePh"), onChange: (event) => setFile(event.target.value) })
+							)
+						: h(
+								Field,
+								{ label: t("sublauncher.repo"), hint: t("sublauncher.repoHint") },
+								h("input", { className: "dsl_input", value: repo, placeholder: t("sublauncher.repoPh"), onChange: (event) => setRepo(event.target.value) })
+							),
+				h(
+					"div",
+					{ className: "dsl_row" },
+					h(Btn, { variant: "ghost", onClick: () => setAdvancedOpen(!advancedOpen) }, advancedOpen ? t("sublauncher.advancedHide") : t("sublauncher.advanced"))
+				),
+				advancedOpen
+					? h(
+							Field,
+							{ label: t("sublauncher.assetPattern"), hint: t("sublauncher.assetPatternHint") },
+							h("input", { className: "dsl_input", value: assetPattern, placeholder: t("sublauncher.assetPatternPh"), onChange: (event) => setAssetPattern(event.target.value) })
+						)
+					: null,
+				h(
+					"div",
+					{ className: "dsl_row" },
+					h(Btn, { variant: "primary", disabled: installing, onClick: installSub }, installing ? t("sublauncher.installing") : t("sublauncher.install"))
+				)
+			);
+			const catalogSection = h(
+				"div",
+				{ className: "dsl_section" },
+				h(
+					"div",
+					{ className: "dsl_row" },
+					h("div", { className: "dsl_section_title" }, t("catalog.title")),
+					h(Btn, { variant: "ghost", disabled: catalogLoading, onClick: () => loadCatalog(true) }, catalogLoading ? t("catalog.loading") : t("catalog.refresh"))
+				),
+				h("div", { className: "dsl_hint" }, t("catalog.hint")),
+				catalogLoading && !catalogEntries.length ? h("div", { className: "dsl_hint" }, t("catalog.loading")) : null,
+				catalogError ? h("div", { className: "dsl_error_text" }, t("catalog.error", { error: catalogError })) : null,
+				!catalogLoading && !catalogEntries.length
+					? h(
+							"div",
+							{ className: "dsl_empty" },
+							h("div", { className: "dsl_empty_title" }, t("catalog.empty")),
+							h("div", { className: "dsl_empty_hint" }, t("catalog.emptyHint"))
+						)
+					: null,
+				catalogEntries.length ? h("div", { className: "dsl_cards" }, catalogRows) : null,
+				h("div", { className: "dsl_hint" }, t("catalog.manualHint"))
+			);
+			const installedSection = h(
+				"div",
+				{ className: "dsl_section" },
+				h(
+					"div",
+					{ className: "dsl_row" },
+					h("div", { className: "dsl_section_title" }, t("sublauncher.installed")),
+					h(Btn, { variant: "ghost", disabled: loading, onClick: loadLaunchers }, loading ? t("common.loading") : t("common.refresh"))
+				),
+				loading ? h("div", { className: "dsl_hint" }, t("sublauncher.loading")) : null,
+				loadError ? h("div", { className: "dsl_error_text" }, t("toast.failed", { error: loadError })) : null,
+				!loading && !loadError && !list.length ? h("div", { className: "dsl_empty" }, h("div", { className: "dsl_empty_title" }, t("sublauncher.empty"))) : null,
+				list.length ? h("div", { className: "dsl_cards" }, rows) : null,
+				updateJobId ? h(JobMonitor, { jobId: updateJobId, t: t, toast: toast, onDone: (job) => finishJob(job, setUpdateJobId) }) : null
+			);
+			return h(
+				"div",
+				null,
+				h(
+					"div",
+					{ className: "dsl_section" },
+					h("div", { className: "dsl_section_title" }, t("sublauncher.title")),
+					h("div", { className: "dsl_hint" }, t("sublauncher.subtitle"))
+				),
+				installSection,
+				catalogSection,
+				installJobId ? h(JobMonitor, { jobId: installJobId, t: t, toast: toast, onDone: (job) => finishJob(job, setInstallJobId) }) : null,
+				installedSection
 			);
 		}
 
