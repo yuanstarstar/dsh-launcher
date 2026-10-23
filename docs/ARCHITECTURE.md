@@ -31,7 +31,7 @@ zip 根目录（没有外层文件夹）必须包含 `launcher.json`：
   "entry": "lib/index.mjs",
   "minCoreVersion": "3.2.0",
   "description": "Minecraft 附属启动器：版本/加载器/内容下载与启动。",
-  "homepage": "https://github.com/OWNER/dsh-launcher-minecraft",
+  "homepage": "https://github.com/yuanstarstar/dsh-launcher-minecraft",
   "gamesHint": ["Minecraft"]
 }
 ```

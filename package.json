@@ -16,11 +16,11 @@
   "author": "<你的名字或 GitHub 用户名>",
   "repository": {
     "type": "git",
-    "url": "https://github.com/OWNER/dsh-launcher.git"
+    "url": "https://github.com/yuanstarstar/dsh-launcher.git"
   },
-  "homepage": "https://github.com/OWNER/dsh-launcher",
+  "homepage": "https://github.com/yuanstarstar/dsh-launcher",
   "bugs": {
-    "url": "https://github.com/OWNER/dsh-launcher/issues"
+    "url": "https://github.com/yuanstarstar/dsh-launcher/issues"
   },
   "engines": {
     "node": ">=20"
