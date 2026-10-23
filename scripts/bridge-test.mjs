@@ -90,16 +90,45 @@ try {
   // 2) 外部适配器写桥接文件 → 自动热加载
   const adaptersDir = path.join(DATA_ROOT, 'adapters')
   await fsp.mkdir(adaptersDir, { recursive: true })
+
+  // 2.0) 模拟热重载/多引擎实例遗留的注册：旧引擎注册过同名游戏、但它的 dispose 已经不可达。
+  //      新引擎加载磁盘来源时必须「接管」注册，否则删除桥接文件后游戏会一直残留。
+  const registryModule = await import(pathToFileURL(path.join(ROOT, 'lib/core/registry.js')).href)
+  const staleAdapter = {
+    id: 'demo-bridge',
+    label: 'Stale Demo',
+    versionLabel: '版本',
+    async listVersions() {
+      return { versions: [], latestRelease: null }
+    },
+    async install() {
+      return {}
+    },
+    async launch() {
+      return null
+    },
+  }
+  const staleDispose = registryModule.registerGame(staleAdapter, 'external')
+  check('注入遗留注册（模拟旧引擎实例）', registryModule.hasGame('demo-bridge'))
+
   const bridgeFile = path.join(adaptersDir, 'sublauncher-demo.mjs')
   const sourceUrl = pathToFileURL(adapterSourceFile).href
   await fsp.writeFile(bridgeFile, `export { default } from '${sourceUrl}';\n`, 'utf8')
 
   const loadedGame = await waitFor(async () => {
     const games = engine.listGames()
-    return games.find((game) => game.id === 'demo-bridge') || null
+    // 注意：初始时存在遗留注册（Stale Demo），必须等热加载完成、标签被磁盘适配器接管后才算加载成功。
+    const game = games.find((item) => item.id === 'demo-bridge')
+    return game && game.label === 'Demo Bridge' ? game : null
   }, 15000, '引擎自动热加载外部适配器')
   check('热加载出外部游戏', Boolean(loadedGame && loadedGame.id === 'demo-bridge'), JSON.stringify(loadedGame && loadedGame.id))
   check('热加载来源为 external', loadedGame && loadedGame.source === 'external', loadedGame && loadedGame.source)
+  check(
+    '接管遗留注册（标签来自磁盘适配器）',
+    loadedGame && loadedGame.label === 'Demo Bridge',
+    loadedGame && loadedGame.label,
+  )
+  check('遗留注册的 dispose 不应删除新注册', Boolean(staleDispose) && registryModule.hasGame('demo-bridge'))
 
   const stateSnapshot = await engine.getState()
   const stateGame = stateSnapshot.games.find((game) => game.id === 'demo-bridge')

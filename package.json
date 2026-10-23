@@ -1,6 +1,6 @@
 {
   "name": "@local/dsh-launcher",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "private": true,
   "type": "module",
   "description": "DSH启动器：通用游戏下载与启动框架。本体不含任何具体游戏与启动器实现，游戏通过 GitHub Release / URL 清单 / 手动导入 / 附属启动器添加；支持从 GitHub 等来源一键安装推荐附属启动器（推荐目录可配置），可在 DSH 对话或面板里安装并启动。",

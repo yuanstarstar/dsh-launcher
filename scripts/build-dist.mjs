@@ -64,7 +64,7 @@ fs.rmSync(TARGET, { recursive: true, force: true })
 fs.mkdirSync(TARGET, { recursive: true })
 
 // 2) 核心包文件
-const ROOT_FILES = ['index.js', 'client.js', 'package.json', 'cordis.patch.yml', 'icon.svg', 'README.md', 'LICENSE']
+const ROOT_FILES = ['index.js', 'client.js', 'package.json', 'cordis.patch.yml', 'icon.svg', 'README.md', 'CHANGELOG.md', 'LICENSE']
 const ROOT_DIRS = ['lib', 'locale', 'docs']
 let copied = 0
 for (const file of ROOT_FILES) {

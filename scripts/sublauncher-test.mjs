@@ -39,6 +39,7 @@ const {
   selectReleaseAsset,
   validateLauncherManifest,
   createSubLauncherManager,
+  downloadCandidates,
 } = await import(CORE_URL + 'sublaunchers.js')
 
 // ---------------------------------------------------------------------------
@@ -527,6 +528,19 @@ async function main() {
     /没有 zip 资产/,
     'selectReleaseAsset 无 zip 报错',
   )
+
+  const githubAsset =
+    'https://github.com/demo-owner/demo-launcher/releases/download/v1.0.0/demo-launcher-1.0.0.zip'
+  const candidates = downloadCandidates(githubAsset)
+  check(candidates.length >= 2, 'downloadCandidates GitHub 资产返回多个候选', candidates.length + ' 个')
+  check(candidates[0] !== githubAsset && /^https:\/\/[^/]+\//.test(candidates[0]), 'downloadCandidates 镜像优先')
+  check(candidates[candidates.length - 1] === githubAsset, 'downloadCandidates 直连兜底排在最后')
+  check(
+    candidates.slice(0, -1).every((candidate) => candidate.endsWith(githubAsset)),
+    'downloadCandidates 镜像不改变原始路径',
+  )
+  const plainUrl = 'https://example.invalid/pkg-1.0.0.zip'
+  check(downloadCandidates(plainUrl).length === 1 && downloadCandidates(plainUrl)[0] === plainUrl, 'downloadCandidates 非 GitHub 地址原样返回')
 
   const validManifest = {
     schemaVersion: 1,
